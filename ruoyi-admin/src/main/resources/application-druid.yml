@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      master:
+        url: ${DB_URL:jdbc:mysql://localhost:3306/superfurniyure?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+        username: ${DB_USERNAME:superfurniyure}
+        password: ${DB_PASSWORD}
+      slave:
+        enabled: false
+      initialSize: 2
+      minIdle: 2
+      maxActive: 10
+      maxWait: 10000
+      connectTimeout: 10000
+      socketTimeout: 30000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      maxEvictableIdleTimeMillis: 900000
+      webStatFilter:
+        enabled: false
+      statViewServlet:
+        enabled: false

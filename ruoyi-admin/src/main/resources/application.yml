@@ -1,0 +1,88 @@
+ruoyi:
+  name: superFurniyure
+  version: 1.0.0
+  copyrightYear: 2026
+  profile: ${UPLOAD_PATH:./data/uploads}
+  addressEnabled: false
+  captchaType: math
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      internal-proxies: ${TRUSTED_PROXY_REGEX:127\.0\.0\.1|0:0:0:0:0:0:0:1|172\.(1[6-9]|2[0-9]|3[01])\.\d{1,3}\.\d{1,3}}
+    threads:
+      max: 100
+      min-spare: 5
+logging:
+  level:
+    com.ruoyi: info
+    org.springframework: warn
+user:
+  password:
+    maxRetryCount: 5
+    lockTime: 10
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:druid}
+  messages:
+    basename: i18n/messages
+  jackson:
+    time-zone: UTC
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  devtools:
+    restart:
+      enabled: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      timeout: 5s
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:true}
+      mail.smtp.starttls.required: ${SMTP_STARTTLS:true}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+token:
+  header: Authorization
+  secret: ${TOKEN_SECRET}
+  expireTime: 60
+mybatis:
+  typeAliasesPackage: com.ruoyi.**.domain
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  configLocation: classpath:mybatis/mybatis-config.xml
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+referer:
+  enabled: false
+  allowed-domains: localhost
+xss:
+  enabled: true
+  excludes: /system/notice
+  urlPatterns: /system/*,/monitor/*,/tool/*
+furniture:
+  bootstrap-password: ${ADMIN_INITIAL_PASSWORD:}
+  cors-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173}
+  mail-enabled: ${MAIL_ENABLED:false}
+  mail-from: ${MAIL_FROM:}
+  mail-to: ${MAIL_TO:}
+  admin-url: ${ADMIN_URL:http://localhost:5173}
