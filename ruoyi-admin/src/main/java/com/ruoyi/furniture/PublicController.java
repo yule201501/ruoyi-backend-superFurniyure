@@ -30,14 +30,14 @@ public class PublicController {
 
   @GetMapping("/content")
   public AjaxResult content() {
-    return AjaxResult.success(catalog.content());
+    return AjaxResult.success(catalog.content().stream().map(WebsiteContent::publicCopy).toList());
   }
 
   @GetMapping("/messages")
   public AjaxResult messages(
-      @RequestParam(defaultValue = "ru") String locale,
+      @RequestParam(defaultValue = "en") String locale,
       @RequestParam(defaultValue = "1") int page) {
-    String safeLocale = locale.equals("en") || locale.equals("zh") ? locale : "ru";
+    String safeLocale = locale.equals("zh") ? "zh" : "en";
     return AjaxResult.success(inquiries.publicList(safeLocale, page));
   }
 

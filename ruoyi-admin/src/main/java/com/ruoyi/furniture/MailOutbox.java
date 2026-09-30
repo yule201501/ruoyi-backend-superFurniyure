@@ -57,7 +57,7 @@ public class MailOutbox {
         SimpleMailMessage m = new SimpleMailMessage();
         m.setFrom(from);
         m.setTo(to.split(","));
-        m.setSubject("superFurniyure inquiry " + r.get("receipt"));
+        m.setSubject("XingjiuCabinets inquiry " + r.get("receipt"));
         m.setText(
             "A new inquiry has been saved. Sign in to review and respond:\n"
                 + url

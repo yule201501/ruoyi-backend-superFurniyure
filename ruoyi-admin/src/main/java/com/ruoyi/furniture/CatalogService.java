@@ -1,6 +1,8 @@
 package com.ruoyi.furniture;
 
 import com.ruoyi.furniture.Models.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.*;
@@ -11,6 +13,17 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CatalogService {
   private final JdbcTemplate db;
+  private static final ObjectMapper JSON = new ObjectMapper();
+
+  private static List<Variant> variants(String value) {
+    try { return value == null ? List.of() : JSON.readValue(value, new TypeReference<List<Variant>>() {}); }
+    catch (Exception e) { throw new IllegalStateException("Invalid stored product variants", e); }
+  }
+
+  private static String encode(List<Variant> value) {
+    try { return JSON.writeValueAsString(value == null ? List.of() : value); }
+    catch (Exception e) { throw new IllegalArgumentException("Invalid variants", e); }
+  }
 
   public CatalogService(JdbcTemplate db) {
     this.db = db;
@@ -34,7 +47,7 @@ public class CatalogService {
               r.getString("image_url"),
               r.getString("model"),
               r.getBoolean("published"),
-              r.getInt("sort_order"));
+              r.getInt("sort_order"), variants(r.getString("variants")));
 
   public List<Product> list(boolean publicOnly) {
     return db.query(
@@ -60,13 +73,18 @@ public class CatalogService {
   public void save(Product p, Long id) {
     if (p.imageUrl().contains(".."))
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image path");
+    Set<String> codes = new HashSet<>();
+    if (p.variants() != null) for (Variant v : p.variants()) {
+      if (v.imageUrl().contains("..") || !codes.add(v.code().trim().toLowerCase(Locale.ROOT)))
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid variant image or duplicate code");
+    }
     Object[] values = {
       p.slug(),
       p.category(),
-      p.nameRu(),
+      Objects.requireNonNullElse(p.nameRu(), ""),
       p.nameEn(),
       p.nameZh(),
-      p.descriptionRu(),
+      Objects.requireNonNullElse(p.descriptionRu(), ""),
       p.descriptionEn(),
       p.descriptionZh(),
       p.specsRu(),
@@ -75,20 +93,20 @@ public class CatalogService {
       p.imageUrl(),
       p.model(),
       p.published(),
-      p.sortOrder()
+      p.sortOrder(), encode(p.variants())
     };
     if (id == null)
       db.update(
           "insert into"
-              + " sf_product(slug,category,name_ru,name_en,name_zh,description_ru,description_en,description_zh,specs_ru,specs_en,specs_zh,image_url,model,published,sort_order)"
-              + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+              + " sf_product(slug,category,name_ru,name_en,name_zh,description_ru,description_en,description_zh,specs_ru,specs_en,specs_zh,image_url,model,published,sort_order,variants)"
+              + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           values);
     else {
       List<Object> args = new ArrayList<>(Arrays.asList(values));
       args.add(id);
       if (db.update(
               "update sf_product set"
-                  + " slug=?,category=?,name_ru=?,name_en=?,name_zh=?,description_ru=?,description_en=?,description_zh=?,specs_ru=?,specs_en=?,specs_zh=?,image_url=?,model=?,published=?,sort_order=?,updated_at=CURRENT_TIMESTAMP"
+                  + " slug=?,category=?,name_ru=?,name_en=?,name_zh=?,description_ru=?,description_en=?,description_zh=?,specs_ru=?,specs_en=?,specs_zh=?,image_url=?,model=?,published=?,sort_order=?,variants=?,updated_at=CURRENT_TIMESTAMP"
                   + " where id=?",
               args.toArray())
           != 1) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -112,9 +130,10 @@ public class CatalogService {
   }
 
   public void saveContent(Content c) {
+    WebsiteContent.validate(c);
     if (db.update(
             "update sf_content set ru=?,en=?,zh=? where content_key=?",
-            c.ru(),
+            Objects.requireNonNullElse(c.ru(), ""),
             c.en(),
             c.zh(),
             c.key())

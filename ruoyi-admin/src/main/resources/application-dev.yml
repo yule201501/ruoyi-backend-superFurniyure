@@ -29,8 +29,9 @@ spring:
   sql:
     init:
       mode: always
+      encoding: UTF-8
       schema-locations: classpath:db/dev-schema.sql
-      data-locations: classpath:db/dev-data.sql
+      data-locations: classpath:db/dev-data.sql,classpath:db/zh-upgrade.sql,classpath:db/planning-upgrade.sql,classpath:db/planning-demo.sql,classpath:db/visual-refresh.sql
   h2:
     console:
       enabled: false
