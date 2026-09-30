@@ -1,4 +1,4 @@
-# superFurniyure 后端项目
+# XingjiuCabinets 后端项目
 
 基于官方 RuoYi-Vue `springboot3` 分支，保留原生认证、角色权限、系统管理和日志。新增业务代码位于 `ruoyi-admin/src/main/java/com/ruoyi/furniture`。
 
@@ -15,7 +15,7 @@ java -jar ruoyi-admin/target/ruoyi-admin.jar --spring.profiles.active=dev
 
 ## 生产数据与配置
 
-正式部署使用 MySQL 8.4、Redis 与 `druid` 配置。数据库应使用本项目 `sql/init/01-schema.sql`、`sql/init/02-data.sql` 初始化；不要导入若依原版演示 SQL 来代替，它不包含家具业务数据结构。
+正式部署使用 MySQL 8.4、Redis 与 `druid` 配置。全新数据库应按顺序执行 `sql/init/` 中的 01 至 04 文件；已有数据库按 `../docs/PLANNING-9.29.md` 执行一次性升级。不要导入若依原版演示 SQL 来代替，它不包含家具业务数据结构。
 
 环境变量、首次管理员密码、HTTPS、备份及邮件设置见上一层 `README.md` 与 `docs/DEPLOYMENT.md`。根目录的 Docker Compose 会自动导入正确的初始化文件。已有数据库不应重新执行建表脚本。
 

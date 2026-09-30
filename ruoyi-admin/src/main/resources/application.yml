@@ -1,5 +1,5 @@
 ruoyi:
-  name: superFurniyure
+  name: XingjiuCabinets
   version: 1.0.0
   copyrightYear: 2026
   profile: ${UPLOAD_PATH:./data/uploads}

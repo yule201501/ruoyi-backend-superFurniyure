@@ -66,11 +66,11 @@ public class InquiryService {
     }
     limit("ip:" + address, 10);
     limit("email:" + in.email().trim().toLowerCase(Locale.ROOT), 5);
-    String receipt = "SF-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
+    String receipt = "XJ-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(Locale.ROOT);
     db.update(
         "insert into"
-            + " sf_inquiry(request_id,payload_hash,receipt,name,email,company,country,contact,product_slug,message,locale,privacy_consent,publish_consent,ip_hash)"
-            + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            + " sf_inquiry(request_id,payload_hash,receipt,name,email,company,country,city,contact,product_slug,message,locale,privacy_consent,publish_consent,ip_hash)"
+            + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         in.requestId().toString(),
         fingerprint,
         receipt,
@@ -78,6 +78,7 @@ public class InquiryService {
         in.email().trim(),
         in.company(),
         in.country().trim(),
+        in.city().trim(),
         in.contact(),
         in.productSlug(),
         in.message().trim(),
@@ -116,7 +117,7 @@ public class InquiryService {
         "rows",
         db.queryForList(
             "select"
-                + " id,receipt,name,email,company,country,product_slug,moderation_status,followup_status,publish_consent,created_at"
+                + " id,receipt,name,email,company,country,city,product_slug,moderation_status,followup_status,publish_consent,created_at"
                 + " from sf_inquiry"
                 + where
                 + " order by id desc limit ? offset ?",
@@ -129,7 +130,7 @@ public class InquiryService {
     return db
         .queryForList(
             "select"
-                + " id,receipt,name,email,company,country,contact,product_slug,message,locale,publish_consent,moderation_status,followup_status,public_name,public_text,reply,internal_note,version,created_at,updated_at"
+                + " id,receipt,name,email,company,country,city,contact,product_slug,message,locale,publish_consent,moderation_status,followup_status,public_name,public_text,reply,internal_note,version,created_at,updated_at"
                 + " from sf_inquiry where id=?",
             id)
         .stream()
