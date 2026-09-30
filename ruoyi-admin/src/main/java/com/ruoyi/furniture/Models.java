@@ -28,7 +28,9 @@ public final class Models {
       @NotBlank @Size(max = 50) String model,
       @NotNull Boolean published,
       @NotNull @Min(0) @Max(9999) Integer sortOrder,
-      @Size(max = 30) List<@NotNull @Valid Variant> variants) {}
+      @Size(max = 30) List<@NotNull @Valid Variant> variants,
+      @Size(max = 2) List<@NotBlank @Size(max = 500)
+          @Pattern(regexp = "/images/[a-zA-Z0-9_.-]+|/profile/[a-zA-Z0-9_./-]+") String> supportingImages) {}
 
   public record Variant(
       @NotBlank @Size(max = 50) String code,

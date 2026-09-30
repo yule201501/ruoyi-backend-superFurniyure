@@ -18,7 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/furniture/images")
 public class ProductImageController {
   @PostMapping
-  @PreAuthorize("@ss.hasPermi('furniture:product:edit')")
+  @PreAuthorize("@ss.hasPermi('furniture:product:edit') or @ss.hasPermi('furniture:content:edit')")
   public AjaxResult upload(@RequestParam("file") MultipartFile file) throws IOException {
     if (file.isEmpty() || file.getSize() > 5 * 1024 * 1024)
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image must be under 5MB");

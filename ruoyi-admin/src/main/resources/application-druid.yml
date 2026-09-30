@@ -4,9 +4,10 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     druid:
       master:
-        url: ${DB_URL:jdbc:mysql://localhost:3306/superfurniyure?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
-        username: ${DB_USERNAME:superfurniyure}
-        password: ${DB_PASSWORD}
+        # DB_* remains authoritative for Docker/production; MYSQL_* supports local .env files.
+        url: ${DB_URL:jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PUBLISHED_PORT:${MYSQL_CONTAINER_PORT:3306}}/${MYSQL_DATABASE:superfurniyure}?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+        username: ${DB_USERNAME:${MYSQL_USER:superfurniyure}}
+        password: ${DB_PASSWORD:${MYSQL_PASSWORD}}
       slave:
         enabled: false
       initialSize: 2

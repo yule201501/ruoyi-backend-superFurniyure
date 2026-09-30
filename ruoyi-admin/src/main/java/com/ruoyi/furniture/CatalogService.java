@@ -20,7 +20,12 @@ public class CatalogService {
     catch (Exception e) { throw new IllegalStateException("Invalid stored product variants", e); }
   }
 
-  private static String encode(List<Variant> value) {
+  private static List<String> supportingImages(String value) {
+    try { return value == null ? List.of() : JSON.readValue(value, new TypeReference<List<String>>() {}); }
+    catch (Exception e) { throw new IllegalStateException("Invalid stored supporting images", e); }
+  }
+
+  private static String encode(List<?> value) {
     try { return JSON.writeValueAsString(value == null ? List.of() : value); }
     catch (Exception e) { throw new IllegalArgumentException("Invalid variants", e); }
   }
@@ -47,7 +52,7 @@ public class CatalogService {
               r.getString("image_url"),
               r.getString("model"),
               r.getBoolean("published"),
-              r.getInt("sort_order"), variants(r.getString("variants")));
+              r.getInt("sort_order"), variants(r.getString("variants")), supportingImages(r.getString("supporting_images")));
 
   public List<Product> list(boolean publicOnly) {
     return db.query(
@@ -73,6 +78,9 @@ public class CatalogService {
   public void save(Product p, Long id) {
     if (p.imageUrl().contains(".."))
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid image path");
+    if (p.supportingImages() != null && (p.supportingImages().size() > 2 ||
+        p.supportingImages().stream().anyMatch(url -> url == null || url.contains(".."))))
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid supporting images");
     Set<String> codes = new HashSet<>();
     if (p.variants() != null) for (Variant v : p.variants()) {
       if (v.imageUrl().contains("..") || !codes.add(v.code().trim().toLowerCase(Locale.ROOT)))
@@ -93,20 +101,20 @@ public class CatalogService {
       p.imageUrl(),
       p.model(),
       p.published(),
-      p.sortOrder(), encode(p.variants())
+      p.sortOrder(), encode(p.variants()), encode(p.supportingImages())
     };
     if (id == null)
       db.update(
           "insert into"
-              + " sf_product(slug,category,name_ru,name_en,name_zh,description_ru,description_en,description_zh,specs_ru,specs_en,specs_zh,image_url,model,published,sort_order,variants)"
-              + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+              + " sf_product(slug,category,name_ru,name_en,name_zh,description_ru,description_en,description_zh,specs_ru,specs_en,specs_zh,image_url,model,published,sort_order,variants,supporting_images)"
+              + " values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           values);
     else {
       List<Object> args = new ArrayList<>(Arrays.asList(values));
       args.add(id);
       if (db.update(
               "update sf_product set"
-                  + " slug=?,category=?,name_ru=?,name_en=?,name_zh=?,description_ru=?,description_en=?,description_zh=?,specs_ru=?,specs_en=?,specs_zh=?,image_url=?,model=?,published=?,sort_order=?,variants=?,updated_at=CURRENT_TIMESTAMP"
+                  + " slug=?,category=?,name_ru=?,name_en=?,name_zh=?,description_ru=?,description_en=?,description_zh=?,specs_ru=?,specs_en=?,specs_zh=?,image_url=?,model=?,published=?,sort_order=?,variants=?,supporting_images=?,updated_at=CURRENT_TIMESTAMP"
                   + " where id=?",
               args.toArray())
           != 1) throw new ResponseStatusException(HttpStatus.NOT_FOUND);

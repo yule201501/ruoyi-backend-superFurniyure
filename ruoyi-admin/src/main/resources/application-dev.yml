@@ -31,7 +31,7 @@ spring:
       mode: always
       encoding: UTF-8
       schema-locations: classpath:db/dev-schema.sql
-      data-locations: classpath:db/dev-data.sql,classpath:db/zh-upgrade.sql,classpath:db/planning-upgrade.sql,classpath:db/planning-demo.sql,classpath:db/visual-refresh.sql
+      data-locations: classpath:db/dev-data.sql,classpath:db/zh-upgrade.sql,classpath:db/planning-upgrade.sql,classpath:db/planning-demo.sql,classpath:db/visual-refresh.sql,classpath:db/product-gallery.sql,classpath:db/factory-editorial.sql
   h2:
     console:
       enabled: false

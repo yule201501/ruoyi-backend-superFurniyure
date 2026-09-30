@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 /** Validates structured website content at the same permission boundary as editorial copy. */
 public final class WebsiteContent {
   private static final Set<String> TEXT = Set.of("brand_story", "factory_intro", "factory_process", "contact_intro");
-  private static final Set<String> LIST = Set.of("hero_slides", "factory_gallery", "social_links", "factory_news", "catalog_banner");
+  private static final Set<String> LIST = Set.of("hero_slides", "factory_gallery", "factory_capabilities", "social_links", "factory_news", "catalog_banner");
   private WebsiteContent() {}
   private static void require(boolean valid) {
     if (!valid) throw new IllegalArgumentException("Invalid website content");
@@ -46,6 +46,15 @@ public final class WebsiteContent {
             field(n, "titleEn", 160); field(n, "titleZh", 160);
             field(n, "bodyEn", 3000); field(n, "bodyZh", 3000);
             require(n.has("published") && n.get("published").isBoolean());
+            // Older text-only articles remain editable. An added cover needs both captions.
+            if (n.has("imageUrl") && !n.path("imageUrl").asText().isBlank()) {
+              image(n); field(n, "altEn", 200); field(n, "altZh", 200);
+            }
+          }
+          case "factory_capabilities" -> {
+            image(n); field(n, "altEn", 200); field(n, "altZh", 200);
+            field(n, "titleEn", 160); field(n, "titleZh", 160);
+            field(n, "bodyEn", 3000); field(n, "bodyZh", 3000);
           }
           default -> { image(n); field(n, "altEn", 200); field(n, "altZh", 200); }
         }

@@ -43,6 +43,7 @@ nbdist/
 *.swp
 .env
 .env.*
+!.env.example
 logs/
 data/
 uploads/

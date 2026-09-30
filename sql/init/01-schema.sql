@@ -324,6 +324,7 @@ create table sf_product (
  specs_ru text, specs_en text, specs_zh text, image_url varchar(500) not null,
  model varchar(50) not null, published boolean not null default false,
  sort_order int not null default 0,
+ supporting_images text,
  created_at timestamp default CURRENT_TIMESTAMP,
  updated_at timestamp default CURRENT_TIMESTAMP
 );
